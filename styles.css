@@ -90,6 +90,14 @@ body {
     margin-top: 5px;
 }
 
+.company-name {
+    font-size: 0.75em;
+    color: #999;
+    font-style: italic;
+    margin-top: 5px;
+    text-transform: lowercase;
+}
+
 .header-right {
     display: flex;
     align-items: center;
