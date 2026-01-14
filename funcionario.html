@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Ponto - Funcionário</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>🕐 Controle de Ponto</h1>
+                <p id="infoFuncionario"></p>
+            </div>
+            <div class="header-right">
+                <div class="user-info-card">
+                    <div class="user-info-item">
+                        <span class="user-info-label">Email:</span>
+                        <span id="userEmail" class="user-info-value"></span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Tipo:</span>
+                        <span id="userTipo" class="user-info-value"></span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Departamento:</span>
+                        <span id="userDepartamento" class="user-info-value"></span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">Sair</button>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <!-- Seção de Jornada Normal -->
+            <section class="card">
+                <h2>Jornada de Trabalho</h2>
+                <div class="button-group-large">
+                    <button id="btnIniciarJornada" class="btn btn-success btn-large" onclick="iniciarJornada()">
+                        ⏰ INICIAR JORNADA
+                    </button>
+                    <button id="btnFinalizarJornada" class="btn btn-danger btn-large" onclick="finalizarJornada()" disabled>
+                        🏁 FINALIZAR JORNADA
+                    </button>
+                </div>
+                <div id="statusJornada" class="status-info"></div>
+            </section>
+            
+            <!-- Seção de Horas Extras -->
+            <section class="card">
+                <h2>Horas Extras</h2>
+                <div class="button-group-large">
+                    <button id="btnIniciarExtra" class="btn btn-warning btn-large" onclick="iniciarHoraExtra()">
+                        ⏱️ INICIAR HORA EXTRA
+                    </button>
+                    <button id="btnFinalizarExtra" class="btn btn-danger btn-large" onclick="finalizarHoraExtra()" disabled>
+                        🏁 FINALIZAR HORA EXTRA
+                    </button>
+                </div>
+                <div id="statusExtra" class="status-info"></div>
+            </section>
+            
+            <!-- Histórico do Dia -->
+            <section class="card">
+                <h2>Histórico de Hoje</h2>
+                <div id="historicoDia" class="historico">
+                    <p class="empty-state">Nenhum registro ainda hoje.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-service.js"></script>
+    <script src="funcionario.js"></script>
+</body>
+</html>
+

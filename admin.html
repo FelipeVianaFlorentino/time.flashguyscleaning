@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Ponto - Admin</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>🕐 Controle de Ponto - Admin</h1>
+                <p>Painel Administrativo</p>
+            </div>
+            <div class="header-right">
+                <div class="user-info-card">
+                    <div class="user-info-item">
+                        <span class="user-info-label">Email:</span>
+                        <span id="userEmail" class="user-info-value"></span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Tipo:</span>
+                        <span id="userTipo" class="user-info-value"></span>
+                    </div>
+                    <div class="user-info-item">
+                        <span class="user-info-label">Departamento:</span>
+                        <span id="userDepartamento" class="user-info-value"></span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">Sair</button>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <!-- Horas Extras Pendentes -->
+            <section class="card card-highlight">
+                <h2>⏳ Horas Extras Pendentes</h2>
+                <div id="horasExtrasPendentes" class="pendentes-list">
+                    <p class="empty-state">Nenhuma solicitação pendente.</p>
+                </div>
+            </section>
+            
+            <!-- Dashboard por Departamento -->
+            <section class="card">
+                <h2>📊 Dashboard por Departamento</h2>
+                <div id="dashboardDepartamentos"></div>
+            </section>
+            
+            <!-- Lista de Funcionários -->
+            <section class="card">
+                <h2>👥 Funcionários</h2>
+                <div id="listaFuncionarios" class="funcionarios-list"></div>
+            </section>
+            
+            <!-- Relatório Mensal -->
+            <section class="card">
+                <h2>📈 Relatório Mensal</h2>
+                <div id="relatorioMensal" class="relatorio"></div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-service.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
+

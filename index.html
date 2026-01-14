@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Ponto - Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <h1>🕐 Controle de Ponto</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="seu.email@flashguyscleaning.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required placeholder="Digite sua senha">
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary" id="btnLogin">
+                        <span id="btnLoginText">Entrar</span>
+                        <span id="btnLoginLoading" style="display: none;">Carregando...</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='cadastro.html'">
+                        Criar Conta
+                    </button>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="event.preventDefault(); abrirModalRecuperacao();" class="link-forgot">
+                        Esqueci minha senha
+                    </a>
+                </div>
+            </form>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+    </div>
+    
+    <!-- Modal de Recuperação de Senha -->
+    <div id="modalRecuperacao" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="fecharModalRecuperacao()">&times;</span>
+            <h2>🔐 Recuperar Senha</h2>
+            <form id="formRecuperacao">
+                <div class="form-group">
+                    <label for="emailRecuperacao">Email</label>
+                    <input type="email" id="emailRecuperacao" name="emailRecuperacao" required 
+                           placeholder="seu.email@flashguyscleaning.com">
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary" id="btnEnviarRecuperacao">
+                        <span id="btnEnviarText">Enviar link de recuperação</span>
+                        <span id="btnEnviarLoading" style="display: none;">Enviando...</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalRecuperacao()">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+            <div id="recuperacaoMessage" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-service.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const senha = document.getElementById('senha').value;
+            
+            if (!email || !senha) {
+                showError('Por favor, preencha todos os campos.');
+                return;
+            }
+            
+            // Validar email
+            if (!validarEmail(email)) {
+                showError('Apenas emails @flashguyscleaning.com podem fazer login.');
+                return;
+            }
+            
+            // Mostrar loading
+            const btnLogin = document.getElementById('btnLogin');
+            const btnLoginText = document.getElementById('btnLoginText');
+            const btnLoginLoading = document.getElementById('btnLoginLoading');
+            btnLogin.disabled = true;
+            btnLoginText.style.display = 'none';
+            btnLoginLoading.style.display = 'inline';
+            
+            try {
+                // Tentar fazer login
+                const resultado = await fazerLogin(email, senha);
+                
+                if (!resultado.success) {
+                    showError(resultado.message || 'Email ou senha incorretos.');
+                    btnLogin.disabled = false;
+                    btnLoginText.style.display = 'inline';
+                    btnLoginLoading.style.display = 'none';
+                    return;
+                }
+                
+                // Redirecionar baseado no tipo
+                if (resultado.usuario.tipo === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'funcionario.html';
+                }
+            } catch (error) {
+                showError('Erro ao fazer login: ' + error.message);
+                btnLogin.disabled = false;
+                btnLoginText.style.display = 'inline';
+                btnLoginLoading.style.display = 'none';
+            }
+        });
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Modal de recuperação de senha
+        function abrirModalRecuperacao() {
+            document.getElementById('modalRecuperacao').style.display = 'block';
+            document.getElementById('emailRecuperacao').value = document.getElementById('email').value || '';
+        }
+        
+        function fecharModalRecuperacao() {
+            document.getElementById('modalRecuperacao').style.display = 'none';
+            document.getElementById('formRecuperacao').reset();
+            document.getElementById('recuperacaoMessage').style.display = 'none';
+        }
+        
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalRecuperacao');
+            if (event.target === modal) {
+                fecharModalRecuperacao();
+            }
+        }
+        
+        // Formulário de recuperação
+        document.getElementById('formRecuperacao').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailRecuperacao').value.trim().toLowerCase();
+            
+            if (!email) {
+                mostrarMensagemRecuperacao('Por favor, digite um email.', 'error');
+                return;
+            }
+            
+            if (!validarEmail(email)) {
+                mostrarMensagemRecuperacao('Apenas emails @flashguyscleaning.com podem recuperar senha.', 'error');
+                return;
+            }
+            
+            const btnEnviar = document.getElementById('btnEnviarRecuperacao');
+            const btnEnviarText = document.getElementById('btnEnviarText');
+            const btnEnviarLoading = document.getElementById('btnEnviarLoading');
+            
+            btnEnviar.disabled = true;
+            btnEnviarText.style.display = 'none';
+            btnEnviarLoading.style.display = 'inline';
+            
+            try {
+                const resultado = await enviarRecuperacaoSenha(email);
+                
+                if (resultado.success) {
+                    mostrarMensagemRecuperacao(resultado.message, 'success');
+                    setTimeout(() => {
+                        fecharModalRecuperacao();
+                    }, 3000);
+                } else {
+                    mostrarMensagemRecuperacao(resultado.message, 'error');
+                    btnEnviar.disabled = false;
+                    btnEnviarText.style.display = 'inline';
+                    btnEnviarLoading.style.display = 'none';
+                }
+            } catch (error) {
+                mostrarMensagemRecuperacao('Erro ao enviar email: ' + error.message, 'error');
+                btnEnviar.disabled = false;
+                btnEnviarText.style.display = 'inline';
+                btnEnviarLoading.style.display = 'none';
+            }
+        });
+        
+        function mostrarMensagemRecuperacao(message, type) {
+            const msgDiv = document.getElementById('recuperacaoMessage');
+            msgDiv.textContent = message;
+            msgDiv.className = type === 'success' ? 'success-message' : 'error-message';
+            msgDiv.style.display = 'block';
+        }
+        
+        // Verificar se veio da redefinição de senha
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('senhaRedefinida') === 'true') {
+                const errorDiv = document.getElementById('errorMessage');
+                errorDiv.textContent = 'Senha redefinida com sucesso! Faça login com sua nova senha.';
+                errorDiv.className = 'success-message';
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
+

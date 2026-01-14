@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Ponto - Cadastro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <h1>🕐 Criar Conta</h1>
+            <form id="cadastroForm">
+                <div class="form-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" required placeholder="Digite seu nome completo">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="seu.email@flashguyscleaning.com">
+                    <small class="form-hint">Apenas emails @flashguyscleaning.com são permitidos</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required placeholder="Mínimo 6 caracteres" minlength="6">
+                    <small class="form-hint">Mínimo de 6 caracteres</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmarSenha">Confirmar Senha</label>
+                    <input type="password" id="confirmarSenha" name="confirmarSenha" required placeholder="Digite a senha novamente">
+                </div>
+                
+                <div class="form-group">
+                    <label for="departamento">Departamento</label>
+                    <select id="departamento" name="departamento" required>
+                        <option value="">Selecione um departamento</option>
+                        <option value="Operações">Operações</option>
+                        <option value="Tech">Tech</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Produto">Produto</option>
+                        <option value="Dados">Dados</option>
+                    </select>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary" id="btnCadastrar">
+                        <span id="btnCadastrarText">Cadastrar</span>
+                        <span id="btnCadastrarLoading" style="display: none;">Cadastrando...</span>
+                    </button>
+                    <a href="index.html" class="link-login">Já tem conta? Faça login</a>
+                </div>
+            </form>
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+        </div>
+    </div>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-service.js"></script>
+    <script>
+        document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('nome').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const senha = document.getElementById('senha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            const departamento = document.getElementById('departamento').value;
+            
+            // Limpar mensagens anteriores
+            hideMessages();
+            
+            // Validações
+            if (!nome || !email || !senha || !confirmarSenha || !departamento) {
+                showError('Por favor, preencha todos os campos.');
+                return;
+            }
+            
+            // Validar email
+            if (!validarEmail(email)) {
+                showError('Apenas emails @flashguyscleaning.com podem se cadastrar.');
+                return;
+            }
+            
+            // Validar senha mínima
+            if (senha.length < 6) {
+                showError('A senha deve ter no mínimo 6 caracteres.');
+                return;
+            }
+            
+            // Validar confirmação de senha
+            if (senha !== confirmarSenha) {
+                showError('As senhas não conferem.');
+                return;
+            }
+            
+            // Mostrar loading
+            const btnCadastrar = document.getElementById('btnCadastrar');
+            const btnCadastrarText = document.getElementById('btnCadastrarText');
+            const btnCadastrarLoading = document.getElementById('btnCadastrarLoading');
+            btnCadastrar.disabled = true;
+            btnCadastrarText.style.display = 'none';
+            btnCadastrarLoading.style.display = 'inline';
+            
+            try {
+                // Tentar cadastrar
+                const resultado = await cadastrarUsuario(nome, email, senha, departamento);
+                
+                if (resultado.success) {
+                    showSuccess('Cadastro realizado com sucesso! Redirecionando...');
+                    
+                    // Redirecionar após 1 segundo
+                    setTimeout(() => {
+                        if (resultado.usuario.tipo === 'admin') {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'funcionario.html';
+                        }
+                    }, 1500);
+                } else {
+                    showError(resultado.message || 'Erro ao cadastrar. Tente novamente.');
+                    btnCadastrar.disabled = false;
+                    btnCadastrarText.style.display = 'inline';
+                    btnCadastrarLoading.style.display = 'none';
+                }
+            } catch (error) {
+                showError('Erro ao cadastrar: ' + error.message);
+                btnCadastrar.disabled = false;
+                btnCadastrarText.style.display = 'inline';
+                btnCadastrarLoading.style.display = 'none';
+            }
+        });
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+        }
+        
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
+
