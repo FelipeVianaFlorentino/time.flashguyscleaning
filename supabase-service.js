@@ -680,12 +680,20 @@ function getMesAtual() {
     return hoje.toISOString().slice(0, 7);
 }
 
-// Expor funções no escopo global
+// Expor funções no escopo global com nomes diferentes para evitar conflito
 window.fazerLogin = fazerLogin;
 window.cadastrarUsuario = cadastrarUsuario;
 window.getUsuarioAtual = getUsuarioAtual;
 window.getUsuarioPorId = getUsuarioPorId;
 window.fazerLogout = fazerLogout;
+
+// Expor funções de ponto com sufixo Service para evitar conflito com handlers
+window.iniciarJornadaService = iniciarJornada;
+window.finalizarJornadaService = finalizarJornada;
+window.iniciarHoraExtraService = iniciarHoraExtra;
+window.finalizarHoraExtraService = finalizarHoraExtra;
+
+// Manter nomes originais também para compatibilidade (mas handlers devem usar Service)
 window.iniciarJornada = iniciarJornada;
 window.finalizarJornada = finalizarJornada;
 window.getRegistrosDia = getRegistrosDia;

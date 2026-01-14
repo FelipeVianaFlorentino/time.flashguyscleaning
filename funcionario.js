@@ -112,15 +112,15 @@ async function verificarEstadoHoraExtra() {
     }
 }
 
-// Handler para iniciar jornada - usa nome diferente para evitar conflito
-window.handleIniciarJornada = async function() {
+// Handler para iniciar jornada
+async function iniciarJornada() {
     try {
         const btn = document.getElementById('btnIniciarJornada');
         btn.disabled = true;
         btn.textContent = 'Carregando...';
         
-        // Chamar função do serviço (definida em supabase-service.js)
-        const resultado = await window.iniciarJornada(userId);
+        // Usar a função do serviço com nome diferente para evitar recursão
+        const resultado = await window.iniciarJornadaService(userId);
         
         if (!resultado || !resultado.success) {
             alert(resultado?.message || 'Erro ao iniciar jornada');
@@ -141,19 +141,16 @@ window.handleIniciarJornada = async function() {
             btn.textContent = '⏰ INICIAR JORNADA';
         }
     }
-};
-
-// Alias para compatibilidade com onclick
-const iniciarJornada = window.handleIniciarJornada;
+}
 
 // Handler para finalizar jornada
-window.handleFinalizarJornada = async function() {
+async function finalizarJornada() {
     try {
         const btn = document.getElementById('btnFinalizarJornada');
         btn.disabled = true;
         btn.textContent = 'Carregando...';
         
-        const resultado = await window.finalizarJornada(userId);
+        const resultado = await window.finalizarJornadaService(userId);
         
         if (!resultado || !resultado.success) {
             alert(resultado?.message || 'Erro ao finalizar jornada');
@@ -176,17 +173,16 @@ window.handleFinalizarJornada = async function() {
             btn.textContent = '🏁 FINALIZAR JORNADA';
         }
     }
-};
-const finalizarJornada = window.handleFinalizarJornada;
+}
 
 // Handler para iniciar hora extra
-window.handleIniciarHoraExtra = async function() {
+async function iniciarHoraExtra() {
     try {
         const btn = document.getElementById('btnIniciarExtra');
         btn.disabled = true;
         btn.textContent = 'Carregando...';
         
-        const resultado = await window.iniciarHoraExtra(userId);
+        const resultado = await window.iniciarHoraExtraService(userId);
         
         if (!resultado || !resultado.success) {
             alert(resultado?.message || 'Erro ao iniciar hora extra');
@@ -207,17 +203,16 @@ window.handleIniciarHoraExtra = async function() {
             btn.textContent = '⏱️ INICIAR HORA EXTRA';
         }
     }
-};
-const iniciarHoraExtra = window.handleIniciarHoraExtra;
+}
 
 // Handler para finalizar hora extra
-window.handleFinalizarHoraExtra = async function() {
+async function finalizarHoraExtra() {
     try {
         const btn = document.getElementById('btnFinalizarExtra');
         btn.disabled = true;
         btn.textContent = 'Carregando...';
         
-        const resultado = await window.finalizarHoraExtra(userId);
+        const resultado = await window.finalizarHoraExtraService(userId);
         
         if (!resultado || !resultado.success) {
             alert(resultado?.message || 'Erro ao finalizar hora extra');
@@ -240,8 +235,7 @@ window.handleFinalizarHoraExtra = async function() {
             btn.textContent = '🏁 FINALIZAR HORA EXTRA';
         }
     }
-};
-const finalizarHoraExtra = window.handleFinalizarHoraExtra;
+}
 
 // Atualizar histórico do dia
 async function atualizarHistorico() {
